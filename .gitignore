@@ -1,1 +1,25 @@
 node_modules
+
+# Next.js build cache
+.next/
+out/
+
+# Package manager caches
+_cacache/
+.cache/
+.npm/
+.yarn/
+.pnpm-store/
+
+# Tooling caches
+.eslintcache
+*.tsbuildinfo
+.turbo/
+
+# Test/coverage output
+coverage/
+
+# Temporary files
+tmp/
+.tmp/
+*.log
