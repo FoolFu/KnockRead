@@ -252,12 +252,20 @@ export default function EditorPage() {
                     sel.removeAllRanges()
                     sel.addRange(range)
                   }}
+                  onFocus={() => {
+                    if (titleRef.current) titleRef.current.blur()
+                    const sel = window.getSelection()
+                    if (sel) sel.removeAllRanges()
+                  }}
                   onMouseDown={(e) => {
                     const el = editorRef.current
                     if (!el) return
                     if (inserted) return
                     e.preventDefault()
                     e.stopPropagation()
+                    if (titleRef.current) titleRef.current.blur()
+                    const sel = window.getSelection()
+                    if (sel) sel.removeAllRanges()
                     if (!nodeRef.current) {
                       el.innerHTML = ''
                       nodeRef.current = document.createTextNode('')

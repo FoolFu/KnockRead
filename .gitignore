@@ -23,3 +23,24 @@ coverage/
 tmp/
 .tmp/
 *.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS/editor/project workspace
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.vercel/
+
+# Build outputs (if generated)
+dist/
+build/
+
+# Env files (secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
