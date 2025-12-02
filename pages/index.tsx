@@ -76,17 +76,14 @@ export default function Home() {
             <div className="p-6 rounded-xl border border-[#1f2330] bg-[#131722]">
               <div className="text-blue-400">PDF / Word</div>
               <div className="mt-2 text-lg">解析成纯文本</div>
-              <div className="mt-2 text-gray-400 text-sm">PDF 使用 pdf-parse；DOCX 使用 mammoth；DOC 使用 word-extractor。</div>
             </div>
             <div className="p-6 rounded-xl border border-[#1f2330] bg-[#131722]">
               <div className="text-blue-400">逐字展示</div>
               <div className="mt-2 text-lg">空格/回车推进一个字</div>
-              <div className="mt-2 text-gray-400 text-sm">点击正文显示光标；Backspace/Delete 每次删除一个字。</div>
             </div>
             <div className="p-6 rounded-xl border border-[#1f2330] bg-[#131722]">
               <div className="text-blue-400">仿飞书体验</div>
               <div className="mt-2 text-lg">深色布局与细节徽标</div>
-              <div className="mt-2 text-gray-400 text-sm">侧栏高亮、顶部工具栏、标题联动与保存状态提示。</div>
             </div>
           </div>
         </section>
