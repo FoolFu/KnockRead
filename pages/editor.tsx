@@ -102,6 +102,18 @@ export default function EditorPage() {
           if (res.ok) {
             const json = await res.json()
             textRef.current = json.text || ''
+            setInserted(false)
+            indexRef.current = 0
+            const el = editorRef.current
+            if (el) {
+              el.innerHTML = ''
+            }
+            nodeRef.current = null
+            if (caretRef.current) {
+              try { caretRef.current.remove() } catch {}
+              caretRef.current = null
+            }
+            setBackendDown(false)
           }
         } catch {
           setBackendDown(true)
