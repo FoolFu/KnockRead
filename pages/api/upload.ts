@@ -17,6 +17,22 @@ function ensureDataDirs() {
   return { base, docsDir, uploadsJson }
 }
 
+async function cleanupDataOnce() {
+  if (!(global as any).__KNOCKREAD_CACHE_CLEARED) {
+    (global as any).__KNOCKREAD_CACHE_CLEARED = true
+    const { docsDir, uploadsJson } = ensureDataDirs()
+    try {
+      const files = await fs.readdir(docsDir)
+      await Promise.all(files.map(async (f) => {
+        try { await fs.unlink(path.join(docsDir, f)) } catch {}
+      }))
+    } catch {}
+    try {
+      await fs.writeFile(uploadsJson, JSON.stringify([], null, 2), 'utf8')
+    } catch {}
+  }
+}
+
 export const config = {
   api: {
     bodyParser: false,
@@ -30,6 +46,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(405).send('Method Not Allowed')
     return
   }
+
+  await cleanupDataOnce()
 
   const form = formidable({
     multiples: false,
