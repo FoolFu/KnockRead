@@ -73,15 +73,15 @@ export default function Home() {
 
         <section className="px-6 md:px-12 pt-16">
           <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl border border-[#1f2330] bg-[#131722]">
+            <div className="p-6 rounded-2xl border border-[#1f2330] bg-[#131722]/85 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-500/50">
               <div className="text-blue-400">PDF / Word</div>
               <div className="mt-2 text-lg">解析成纯文本</div>
             </div>
-            <div className="p-6 rounded-xl border border-[#1f2330] bg-[#131722]">
+            <div className="p-6 rounded-2xl border border-[#1f2330] bg-[#131722]/85 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-500/50">
               <div className="text-blue-400">逐字展示</div>
               <div className="mt-2 text-lg">空格/回车推进一个字</div>
             </div>
-            <div className="p-6 rounded-xl border border-[#1f2330] bg-[#131722]">
+            <div className="p-6 rounded-2xl border border-[#1f2330] bg-[#131722]/85 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-500/50">
               <div className="text-blue-400">仿飞书体验</div>
               <div className="mt-2 text-lg">深色布局与细节徽标</div>
             </div>
