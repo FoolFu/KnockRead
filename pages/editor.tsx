@@ -15,6 +15,8 @@ export default function EditorPage() {
   const titleRef = useRef<HTMLDivElement>(null)
   const [saved, setSaved] = useState(true)
   const [backendDown, setBackendDown] = useState(false)
+  const [kbOpen, setKbOpen] = useState(false)
+  const [docs, setDocs] = useState<Array<{ id: string; name: string; createdAt?: number }>>([])
 
   useEffect(() => {
     const savedTitle = typeof window !== 'undefined' ? (localStorage.getItem('docTitle') || '') : ''
@@ -122,6 +124,8 @@ export default function EditorPage() {
       try {
         const res = await fetch('/api/docs')
         if (!res.ok) throw new Error('down')
+        const json = await res.json()
+        setDocs(json.list || [])
       } catch {
         setBackendDown(true)
         try {
@@ -133,6 +137,7 @@ export default function EditorPage() {
         textRef.current = ''
         setInserted(false)
         indexRef.current = 0
+        setDocs([])
       }
     })()
   }, [])
@@ -175,9 +180,26 @@ export default function EditorPage() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 14a6 6 0 1112 0H6zm-2 2h16v4H4v-4z"/></svg>
               <span>云盘</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 rounded hover:bg-[#1b2030]">
+            <div className="flex items-center gap-2 px-3 py-2 rounded hover:bg-[#1b2030] cursor-pointer"
+                 onClick={() => setKbOpen((v) => !v)}
+            >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v4H4V5zm0 6h10v4H4v-4zm12 0h4v4h-4v-4z"/></svg>
               <span>知识库</span>
+            </div>
+            <div className={`px-3 overflow-hidden transition-all duration-300 ${kbOpen ? 'max-h-64' : 'max-h-0'}`}>
+              {docs && docs.length > 0 ? (
+                <div className="pt-2 space-y-1">
+                  {docs.map((d) => (
+                    <button
+                      key={d.id}
+                      onClick={() => router.push(`/editor?id=${encodeURIComponent(d.id)}`)}
+                      className={`w-full text-left px-3 py-2 rounded-md border ${docId === d.id ? 'border-blue-500 text-blue-300 bg-[#13203a]' : 'border-[#2a2f3a] text-gray-300 bg-[#151821]'}`}
+                    >{d.name}</button>
+                  ))}
+                </div>
+              ) : (
+                <div className="pt-2 px-3 py-2 text-xs text-gray-500">暂无已解析文件</div>
+              )}
             </div>
             <div className="flex items-center gap-2 px-3 py-2 rounded hover:bg-[#1b2030]">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a5 5 0 00-5 5h2a3 3 0 116 0h2a5 5 0 00-5-5zm-6 9h12v2H6v-2zm-2 4h16v6H4v-6z"/></svg>
