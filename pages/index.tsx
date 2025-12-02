@@ -7,6 +7,7 @@ export default function Home() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploadedName, setUploadedName] = useState<string | null>(null)
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -26,7 +27,7 @@ export default function Home() {
       }
       const data: { text: string } = await res.json()
       localStorage.setItem('parsedText', data.text || '')
-      router.push('/editor')
+      setUploadedName(file.name)
     } catch (err: any) {
       setError(err?.message || '上传失败')
     } finally {
@@ -51,13 +52,9 @@ export default function Home() {
             <p className="mt-4 text-gray-400 max-w-3xl">上传 PDF / Word 小说文本，解析成纯文字，在仿飞书深色编辑页里以打字机方式慢慢看，低调不扎眼。</p>
             <div className="mt-8 flex items-center gap-3">
               <button
-                onClick={() => fileInputRef.current?.click()}
-                className="h-11 px-5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-sm"
-              >开始使用</button>
-              <button
                 onClick={() => router.push('/editor')}
-                className="h-11 px-5 rounded-md border border-[#2a2f3a] bg-[#151821] text-gray-200 text-sm"
-              >进入编辑页</button>
+                className="h-11 px-5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-sm"
+              >开始摸鱼</button>
             </div>
             {uploading && <p className="mt-3 text-blue-400">正在解析，请稍候…</p>}
             {error && <p className="mt-3 text-red-400">{error}</p>}
@@ -94,11 +91,16 @@ export default function Home() {
               <div className="text-gray-300">上传你的小说开始摸鱼体验：</div>
               <div className="mt-4">
                 <div className="flex flex-col md:flex-row gap-3">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="h-11 px-5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-sm"
-                  >选择文件</button>
-                  <div className="text-xs text-gray-500 self-center">支持 .pdf / .doc / .docx，最大 20MB</div>
+                  <div className="flex flex-col">
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="h-11 px-5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-sm"
+                    >选择文件</button>
+                    {uploadedName && !uploading && !error && (
+                      <div className="mt-2 text-sm text-green-400">已选择：{uploadedName}</div>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-500 md:self-center">支持 .pdf / .doc / .docx，最大 20MB</div>
                 </div>
               </div>
             </div>
