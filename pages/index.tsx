@@ -78,7 +78,7 @@ export default function Home() {
               <button
                 onClick={() => {
                   if (!selectedId) {
-                    setError('请先上传文件')
+                    setError('请选择已上传的文档')
                     return
                   }
                   router.push(`/editor?id=${encodeURIComponent(selectedId)}`)
