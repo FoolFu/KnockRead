@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '@/components/Layout'
 
@@ -8,6 +8,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploadedName, setUploadedName] = useState<string | null>(null)
+  const [docs, setDocs] = useState<Array<{ id: string; name: string; createdAt: number }>>([])
+  const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -25,15 +27,25 @@ export default function Home() {
         const msg = await res.text()
         throw new Error(msg || '上传失败')
       }
-      const data: { text: string } = await res.json()
-      localStorage.setItem('parsedText', data.text || '')
-      setUploadedName(file.name)
+      const data: { id: string; name: string } = await res.json()
+      setUploadedName(data.name || file.name)
+      await loadDocs()
     } catch (err: any) {
       setError(err?.message || '上传失败')
     } finally {
       setUploading(false)
     }
   }
+
+  const loadDocs = async () => {
+    try {
+      const listRes = await fetch('/api/docs')
+      const json = await listRes.json()
+      setDocs(json.list || [])
+    } catch {}
+  }
+
+  useEffect(() => { loadDocs() }, [])
 
   return (
     <Layout>
@@ -52,7 +64,13 @@ export default function Home() {
             <p className="mt-4 text-gray-400 max-w-3xl">上传 PDF / Word 小说文本，解析成纯文字，在仿飞书深色编辑页里以打字机方式慢慢看，低调不扎眼。</p>
             <div className="mt-8 flex items-center gap-3">
               <button
-                onClick={() => router.push('/editor')}
+                onClick={() => {
+                  if (!selectedId) {
+                    setError('请先上传文件')
+                    return
+                  }
+                  router.push(`/editor?id=${encodeURIComponent(selectedId)}`)
+                }}
                 className="h-11 px-5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-sm"
               >开始摸鱼</button>
             </div>
@@ -98,6 +116,20 @@ export default function Home() {
                     >选择文件</button>
                     {uploadedName && !uploading && !error && (
                       <div className="mt-2 text-sm text-green-400">已选择：{uploadedName}</div>
+                    )}
+                    {docs && docs.length > 0 && (
+                      <div className="mt-3 text-sm text-gray-300">
+                        <div className="mb-2 text-xs text-gray-500">已上传文件（点击选择）</div>
+                        <div className="space-y-2">
+                          {docs.map((d) => (
+                            <button
+                              key={d.id}
+                              onClick={() => setSelectedId(d.id)}
+                              className={`w-full text-left px-3 py-2 rounded-md border ${selectedId === d.id ? 'border-blue-500 text-blue-300 bg-[#13203a]' : 'border-[#2a2f3a] text-gray-300 bg-[#151821]'}`}
+                            >{d.name}</button>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
                   <div className="text-xs text-gray-500 md:self-center">支持 .pdf / .doc / .docx，最大 20MB</div>

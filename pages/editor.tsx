@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/router'
 import Layout from '@/components/Layout'
 
 export default function EditorPage() {
+  const router = useRouter()
+  const docId = typeof router?.query?.id === 'string' ? (router.query.id as string) : undefined
   const editorRef = useRef<HTMLDivElement>(null)
   const [inserted, setInserted] = useState(false)
   const textRef = useRef<string>('')
@@ -87,6 +90,20 @@ export default function EditorPage() {
     window.addEventListener('keydown', onKey, { capture: true })
     return () => window.removeEventListener('keydown', onKey as any)
   }, [inserted])
+
+  useEffect(() => {
+    if (docId) {
+      ;(async () => {
+        try {
+          const res = await fetch(`/api/docs/${encodeURIComponent(docId)}`)
+          if (res.ok) {
+            const json = await res.json()
+            textRef.current = json.text || ''
+          }
+        } catch {}
+      })()
+    }
+  }, [docId])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

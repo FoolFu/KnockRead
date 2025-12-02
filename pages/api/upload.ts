@@ -4,6 +4,18 @@ import fs from 'fs/promises'
 import path from 'path'
 import { parsePDFBuffer } from '@/utils/parsePDF'
 import { extractDocxText, extractDocText } from '@/utils/parseDoc'
+import os from 'os'
+import fssync from 'fs'
+
+function ensureDataDirs() {
+  const base = path.join(process.cwd(), 'data')
+  const docsDir = path.join(base, 'docs')
+  if (!fssync.existsSync(base)) fssync.mkdirSync(base)
+  if (!fssync.existsSync(docsDir)) fssync.mkdirSync(docsDir)
+  const uploadsJson = path.join(base, 'uploads.json')
+  if (!fssync.existsSync(uploadsJson)) fssync.writeFileSync(uploadsJson, JSON.stringify([], null, 2))
+  return { base, docsDir, uploadsJson }
+}
 
 export const config = {
   api: {
@@ -62,7 +74,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return
     }
 
-    res.status(200).json({ text })
+    const { base, docsDir, uploadsJson } = ensureDataDirs()
+    const id = (typeof (global as any).crypto !== 'undefined' && (global as any).crypto.randomUUID) ? (global as any).crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`
+    const docPath = path.join(docsDir, `${id}.txt`)
+    await fs.writeFile(docPath, text, 'utf8')
+    // append metadata
+    try {
+      const metaRaw = await fs.readFile(uploadsJson, 'utf8')
+      const list = JSON.parse(metaRaw || '[]') as Array<{ id: string; name: string; createdAt: number }>
+      list.push({ id, name: file?.originalFilename || '未命名文件', createdAt: Date.now() })
+      await fs.writeFile(uploadsJson, JSON.stringify(list, null, 2), 'utf8')
+    } catch {}
+
+    res.status(200).json({ id, name: file?.originalFilename || '未命名文件' })
   } catch (e: any) {
     res.status(500).send(e?.message || '解析失败')
   }
