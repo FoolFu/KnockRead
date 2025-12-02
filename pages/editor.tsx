@@ -14,6 +14,7 @@ export default function EditorPage() {
   const [title, setTitle] = useState('')
   const titleRef = useRef<HTMLDivElement>(null)
   const [saved, setSaved] = useState(true)
+  const [backendDown, setBackendDown] = useState(false)
 
   useEffect(() => {
     const savedTitle = typeof window !== 'undefined' ? (localStorage.getItem('docTitle') || '') : ''
@@ -100,10 +101,41 @@ export default function EditorPage() {
             const json = await res.json()
             textRef.current = json.text || ''
           }
-        } catch {}
+        } catch {
+          setBackendDown(true)
+          try {
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('parsedText')
+              localStorage.removeItem('docTitle')
+            }
+          } catch {}
+          textRef.current = ''
+          setInserted(false)
+          indexRef.current = 0
+        }
       })()
     }
   }, [docId])
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const res = await fetch('/api/docs')
+        if (!res.ok) throw new Error('down')
+      } catch {
+        setBackendDown(true)
+        try {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('parsedText')
+            localStorage.removeItem('docTitle')
+          }
+        } catch {}
+        textRef.current = ''
+        setInserted(false)
+        indexRef.current = 0
+      }
+    })()
+  }, [])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -213,6 +245,9 @@ export default function EditorPage() {
           <div className="flex-1 px-16">
             <div className="max-w-3xl mx-auto">
               <div className="pt-10">
+                {backendDown && (
+                  <div className="mb-3 text-yellow-400 text-sm">后端不可用，已清空本地缓存</div>
+                )}
                 <div
                   ref={titleRef}
                   contentEditable

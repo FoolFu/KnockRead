@@ -40,9 +40,21 @@ export default function Home() {
   const loadDocs = async () => {
     try {
       const listRes = await fetch('/api/docs')
+      if (!listRes.ok) throw new Error('后端不可用')
       const json = await listRes.json()
       setDocs(json.list || [])
-    } catch {}
+    } catch (e) {
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('parsedText')
+          localStorage.removeItem('docTitle')
+        }
+      } catch {}
+      setDocs([])
+      setUploadedName(null)
+      setSelectedId(null)
+      setError('后端不可用，已清空本地缓存')
+    }
   }
 
   useEffect(() => { loadDocs() }, [])
