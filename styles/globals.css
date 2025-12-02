@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #__next {
+  height: 100%;
+}
+
+body {
+  @apply bg-gray-100 text-gray-900;
+}
+
+.caret {
+  display: inline-block;
+  width: 2px;
+  background-color: #2563eb;
+  vertical-align: baseline;
+  height: 1em;
+  animation: caret-blink 1s steps(1, end) infinite;
+}
+
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.title[contenteditable]:empty:before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+}
