@@ -165,7 +165,9 @@ export default function EditorPage() {
             </div>
           </div>
           <div className="mt-3 px-3 space-y-1 text-sm">
-            <div className="flex items-center gap-2 px-3 py-2 rounded bg-[#17375f] text-blue-300">
+            <div className="flex items-center gap-2 px-3 py-2 rounded bg-[#17375f] text-blue-300 cursor-pointer"
+                 onClick={() => router.push('/')}
+            >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8-1 1H4L3 11l9-8zM4 12h16v8H4v-8z"/></svg>
               <span>主页</span>
             </div>
